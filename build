@@ -1,0 +1,2 @@
+compile 
+# gcc -o test invT.c -ffast-math -O3 -msse -mavx2 -DN=1000 -fopenmp -DN_THREAD=7
