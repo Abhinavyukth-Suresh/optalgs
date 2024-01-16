@@ -30,10 +30,9 @@ double* MATRIX_INV(double* array, int n){
     double norm,proj;
     double coeff;
     int i,j,k;
-
     unsigned long t2;
     unsigned long t1;
-    //GRAM SCHMIDT ORTHOGONALIZATION
+	
     norm = 0;
     #pragma omp simd reduction(+:norm)
     for(j=0;j<n;j++){norm += array[j]*array[j];}
@@ -50,14 +49,12 @@ double* MATRIX_INV(double* array, int n){
             proj=0;
             #pragma omp simd reduction(+:proj)
             for(int k=0;k<n;k++){proj+=array[i*n+k]*SIMDptr2[k];}
-            for(k=0;k<n;k++){SIMDptr1[k] -= proj*SIMDptr2[k];}
-            
+            for(k=0;k<n;k++){SIMDptr1[k] -= proj*SIMDptr2[k];}       
         }
         norm = 0;
         #pragma omp simd
         for(j=0;j<n;j++){
-            Q[i*n+j]+=array[i*n+j];
-            
+            Q[i*n+j]+=array[i*n+j];   
         }
         #pragma omp simd reduction(+:norm)
         for(j=0;j<n;j++){
@@ -67,7 +64,6 @@ double* MATRIX_INV(double* array, int n){
         #pragma omp simd
         for(j=0;j<n;j++){Q[i*n+j]= Q[i*n+j]/norm;}
     }
-    
     
     for(i=0;i<n;i++){
         for(j=0;j<=i;j++){
@@ -110,7 +106,6 @@ double* MATRIX_INV(double* array, int n){
 
         }
     }
-
     #pragma omp parallel for num_threads(N_THREAD)
     for(int k=0;k<n;k++){
         for(int i=0;i<n;i++){
@@ -121,8 +116,6 @@ double* MATRIX_INV(double* array, int n){
     }
     return Ainv;
 }
-
-
 
 int main_(){
     int n = N;
