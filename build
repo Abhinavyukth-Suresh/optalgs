@@ -1,3 +1,0 @@
-compile 
-# gcc -o test matinv.c -ffast-math -O3 -msse -mavx2 -DN=1000 -fopenmp -DN_THREAD=7 -funroll-all-loops
-# gcc -shared -fPIC -o test.so -msse -mavx2 -mavx -fopenmp -ffast-math -funroll-all-loops -O3 -DN_THREAD=7 -DN=1500 invT.c
