@@ -1,1 +1,1 @@
-
+gcc -o GE.so -shared -fPIC GE2.c -O3 -msse -ffast-math -mavx2 -funroll-all-loops
