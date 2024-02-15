@@ -1,0 +1,3 @@
+# manually build using command:
+gcc GE_PP.c -o GE_PP.so -O3 -msse -mavx2 -shared -fPIC -ffast-math -funroll-all-loops
+gcc GE_CP.c -o GE_CP.so -O3 -msse -mavx2 -shared -fPIC -ffast-math -funroll-all-loops
