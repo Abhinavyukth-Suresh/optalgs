@@ -181,8 +181,8 @@ Optimizing DGEMM (Double-precision General Matrix Multiplication) for  Tiger Lak
 
 ---
 
-    Step 1: Understanding Tiger Lake's Architecture 
-  #  1. Cache Hierarchy in Tiger Lake (11th Gen Intel Core) 
+    1: Tiger Lake Architecture 
+1.1. Cache Hierarchy in Tiger Lake (11th Gen Intel Core) 
 |  Cache Level  |  Size per Core  |  Latency   |
 |---------------|----------------|-------------|
 | L1 (Data)     |  48 KB        | ~4 cycles  |
@@ -191,7 +191,7 @@ Optimizing DGEMM (Double-precision General Matrix Multiplication) for  Tiger Lak
 
   Goal:  Fit as much of the working set (blocks of matrices A, B, and C) into L1 or L2 cache.
 
-  #  2. Registers Available for AVX2 (256-bit) 
+2. Registers Available for AVX2 (256-bit) 
 Each  Intel Tiger Lake  core has  16 vector registers  (`ymm0`-`ymm15`), each holding  4 double-precision (`double`) values  (256-bit registers).  
 So, in total:
 -  Max storage per register  = `16 registers × 4 doubles = 64 doubles (~512 bytes)`
@@ -201,7 +201,7 @@ So, in total:
     Step 2: Determining Block Sizes (`m_b`, `n_r`, `k_b`) 
 We select `m_b`, `n_r`, and `k_b` based on cache and register constraints.
 
-  #  1. Choosing `m_r × n_r` (Register Blocking) 
+1. Choosing `m_r × n_r` (Register Blocking) 
 Since AVX2 works with  4 doubles per 256-bit register , we aim to  keep an entire submatrix of `C` in registers .
 
       Optimal choice: 
@@ -211,7 +211,7 @@ Since AVX2 works with  4 doubles per 256-bit register , we aim to  keep an entir
   
   Why?  This ensures that an entire  8×4 block of C  stays in registers during computation, reducing cache accesses.
 
-  #  2. Choosing `k_b` (Panel Width for Matrix A and B) 
+  2. Choosing `k_b` (Panel Width for Matrix A and B) 
   Guideline:  Choose `k_b` to  fit the panel of `B` in L1/L2 cache  to avoid excessive memory traffic.
 
 - Each panel of `B` (size `k_b × n_r`) must fit in L1 or L2 cache.
@@ -225,7 +225,7 @@ Since AVX2 works with  4 doubles per 256-bit register , we aim to  keep an entir
 
   Choice:  `k_b = 512` is a good balance to leverage L2 while keeping `B` blocks in L1.
 
-  #  3. Choosing `m_b` (Row Blocking for `A`) 
+  3. Choosing `m_b` (Row Blocking for `A`) 
   Guideline:  Choose `m_b` so that multiple  panels of `A` fit in L2 .
 
 - We already set `m_r = 8`, and a block should be a multiple of `m_r`.
@@ -243,7 +243,7 @@ These values balance  register blocking, cache reuse, and memory bandwidth effic
 
 ---
 
-    Step 3: Optimizing Memory Access 
+  3: Optimizing Memory Access 
 -  A-panel (`m_b × k_b`) is loaded from memory and reused for multiple `B` panels. 
 -  B-panel (`k_b × n_r`) fits in L1 cache, so it is reused for multiple `A` rows. 
 -  C-panel (`m_b × n_r`) stays in registers for computation before being written to memory. 
@@ -251,7 +251,7 @@ These values balance  register blocking, cache reuse, and memory bandwidth effic
 
 ---
 
-  #  Conclusion 
+Conclusion 
 By carefully selecting `m_b = 32`, `n_r = 4`, `k_b = 512`, we:
   Maximize register utilization  (keep an entire submatrix of C in registers).  
   Minimize cache misses  (fit B in L1, A in L2).  
