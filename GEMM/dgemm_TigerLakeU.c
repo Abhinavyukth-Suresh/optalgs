@@ -172,7 +172,7 @@ int main(){
 
 /*
 
-  # Determine Block Sizes for DGEMM on Tiger Lake
+DETERMINING BLOCK SIZE FOR DGEMM ON TIGERLAKE
 
 Optimizing DGEMM (Double-precision General Matrix Multiplication) for  Tiger Lake  requires selecting the right  block sizes (`m_b`, `n_r`, `k_b`)  based on:  
 1.  Cache sizes  (to minimize cache misses and reuse data efficiently).  
